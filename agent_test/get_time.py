@@ -96,6 +96,9 @@ def run_one_cycle() -> None:
         print(choice.message.content or "[no content]")
         return
 
+    # Append the assistant message (with tool_calls) ONCE before the loop
+    messages.append(choice.message)
+
     # --- Execute every tool call the model requested ---------------------------
     for tool_call in choice.message.tool_calls:
         name = tool_call.function.name
@@ -108,8 +111,6 @@ def run_one_cycle() -> None:
         except Exception as exc:
             result = json.dumps({"error": str(exc)})
 
-        # Append the assistant's tool-call message and the tool result
-        messages.append(choice.message)  # assistant message with tool_calls
         messages.append(
             {
                 "role": "tool",
